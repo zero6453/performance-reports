@@ -92,7 +92,7 @@
     <div class="container">
         <div class="info-banner">
             <h3>🎮 Bakanawa游戏性能分析图表</h3>
-            <p>生成时间: 2025-07-19 04:14:30 | 测试次数: 10</p>
+            <p>生成时间: 2025-07-19 05:35:10 | 测试次数: 10</p>
         </div>
         
         <!-- 统计数据卡片 -->
@@ -113,6 +113,22 @@
                 <div class="stat-value">0.94s</div>
                 <div class="stat-label">标准差</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-value">13.56MB</div>
+                <div class="stat-label">平均总体积</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">13.44MB</div>
+                <div class="stat-label">最小体积</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">14.23MB</div>
+                <div class="stat-label">最大体积</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">10</div>
+                <div class="stat-label">测试次数</div>
+            </div>
         </div>
 
         <!-- 总耗时曲线图 -->
@@ -125,29 +141,18 @@
         <div class="chart-container">
             <canvas id="resourceStackedChart"></canvas>
         </div>
-        <!-- 详细数据表格 -->
-        <h2>📋 详细测试数据</h2>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>测试次数</th>
-                    <th>总耗时(秒)</th>
-                    <th>文件名</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td>10.27</td><td>bakanawa_unlimited1.csv</td></tr>
-                <tr><td>2</td><td>11.36</td><td>bakanawa_unlimited2.csv</td></tr>
-                <tr><td>3</td><td>10.26</td><td>bakanawa_unlimited3.csv</td></tr>
-                <tr><td>4</td><td>10.56</td><td>bakanawa_unlimited4.csv</td></tr>
-                <tr><td>5</td><td>10.56</td><td>bakanawa_unlimited5.csv</td></tr>
-                <tr><td>6</td><td>11.56</td><td>bakanawa_unlimited6.csv</td></tr>
-                <tr><td>7</td><td>11.67</td><td>bakanawa_unlimited7.csv</td></tr>
-                <tr><td>8</td><td>11.87</td><td>bakanawa_unlimited8.csv</td></tr>
-                <tr><td>9</td><td>13.28</td><td>bakanawa_unlimited9.csv</td></tr>
-                <tr><td>10</td><td>10.64</td><td>bakanawa_unlimited10.csv</td></tr>
-            </tbody>
-        </table>
+        
+        <!-- 资源体积堆叠图 -->
+        <h2>💾 各类型资源体积堆叠图</h2>
+        <div class="chart-container">
+            <canvas id="volumeStackedChart"></canvas>
+        </div>
+        
+        <!-- 资源占比分布图 -->
+        <h2>🥧 各测试资源体积占比分布</h2>
+        <div class="chart-container">
+            <canvas id="percentageLineChart"></canvas>
+        </div>
         <h2>🔢 资源类型数量分布表</h2>
         <table class="data-table">
             <thead>
@@ -357,6 +362,7 @@
 
         // 创建资源数量堆叠图
         const resourceStackedCtx = document.getElementById('resourceStackedChart').getContext('2d');
+        const totalCounts = [383, 382, 382, 383, 383, 382, 381, 386, 385, 382];
         new Chart(resourceStackedCtx, {
             type: 'bar',
             data: resourceStackedData,
@@ -371,6 +377,14 @@
                     },
                     legend: {
                         position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterTitle: function(context) {
+                                const testIndex = context[0].dataIndex;
+                                return `总数量: ${totalCounts[testIndex]} 个`;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -387,6 +401,401 @@
                             display: true,
                             text: '资源数量'
                         }
+                    }
+                }
+            }
+        });
+        
+        // 资源体积堆叠图数据
+        const volumeStackedData = {
+            labels: ['测试1', '测试2', '测试3', '测试4', '测试5', '测试6', '测试7', '测试8', '测试9', '测试10'],
+            datasets: [
+            {
+                        "label": "HTML\u8d44\u6e90",
+                        "data": [
+                                    0.01,
+                                    0.01,
+                                    0.01,
+                                    0.01,
+                                    0.01,
+                                    0.01,
+                                    0.01,
+                                    0.01,
+                                    0.01,
+                                    0.01
+                        ],
+                        "backgroundColor": "#FF6B6B"
+            },
+            {
+                        "label": "JSON\u8d44\u6e90",
+                        "data": [
+                                    1.63,
+                                    1.63,
+                                    1.63,
+                                    1.63,
+                                    1.63,
+                                    1.63,
+                                    1.63,
+                                    1.63,
+                                    1.63,
+                                    1.63
+                        ],
+                        "backgroundColor": "#4ECDC4"
+            },
+            {
+                        "label": "JavaScript\u8d44\u6e90",
+                        "data": [
+                                    2.61,
+                                    2.61,
+                                    2.61,
+                                    2.61,
+                                    2.61,
+                                    2.61,
+                                    2.61,
+                                    2.61,
+                                    2.61,
+                                    2.61
+                        ],
+                        "backgroundColor": "#45B7D1"
+            },
+            {
+                        "label": "WebAssembly\u8d44\u6e90",
+                        "data": [
+                                    0.19,
+                                    0.19,
+                                    0.19,
+                                    0.19,
+                                    0.19,
+                                    0.19,
+                                    0.19,
+                                    0.19,
+                                    0.19,
+                                    0.19
+                        ],
+                        "backgroundColor": "#96CEB4"
+            },
+            {
+                        "label": "XML\u8d44\u6e90",
+                        "data": [
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0
+                        ],
+                        "backgroundColor": "#FECA57"
+            },
+            {
+                        "label": "\u56fe\u7247\u8d44\u6e90",
+                        "data": [
+                                    4.88,
+                                    4.88,
+                                    4.88,
+                                    4.88,
+                                    4.88,
+                                    4.88,
+                                    4.86,
+                                    5.64,
+                                    5.1,
+                                    4.88
+                        ],
+                        "backgroundColor": "#FF9FF3"
+            },
+            {
+                        "label": "\u8d44\u6e90\u5305",
+                        "data": [
+                                    2.29,
+                                    2.29,
+                                    2.29,
+                                    2.29,
+                                    2.29,
+                                    2.29,
+                                    2.29,
+                                    2.3,
+                                    2.3,
+                                    2.29
+                        ],
+                        "backgroundColor": "#54A0FF"
+            },
+            {
+                        "label": "\u97f3\u9891\u8d44\u6e90",
+                        "data": [
+                                    1.85,
+                                    1.85,
+                                    1.85,
+                                    1.85,
+                                    1.85,
+                                    1.85,
+                                    1.85,
+                                    1.85,
+                                    1.85,
+                                    1.85
+                        ],
+                        "backgroundColor": "#5F27CD"
+            }
+]
+        };
+
+        // 创建资源体积堆叠图
+        const volumeStackedCtx = document.getElementById('volumeStackedChart').getContext('2d');
+        const totalVolumes = [13.46, 13.46, 13.46, 13.46, 13.46, 13.46, 13.440000000000001, 14.23, 13.689999999999998, 13.46];
+        new Chart(volumeStackedCtx, {
+            type: 'bar',
+            data: volumeStackedData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '每次测试各类型资源体积分布',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterTitle: function(context) {
+                                const testIndex = context[0].dataIndex;
+                                return `总体积: ${totalVolumes[testIndex].toFixed(2)} MB`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: '测试次数'
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: '占用体积(MB)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 资源占比线图数据
+        const percentageLineData = {
+            labels: ['测试1', '测试2', '测试3', '测试4', '测试5', '测试6', '测试7', '测试8', '测试9', '测试10'],
+            datasets: [
+            {
+                        "label": "HTML\u8d44\u6e90",
+                        "data": [
+                                    0.07,
+                                    0.07,
+                                    0.07,
+                                    0.07,
+                                    0.07,
+                                    0.07,
+                                    0.07,
+                                    0.07,
+                                    0.07,
+                                    0.07
+                        ],
+                        "borderColor": "#FF6B6B",
+                        "backgroundColor": "#FF6B6B20",
+                        "fill": false,
+                        "tension": 0.3
+            },
+            {
+                        "label": "JSON\u8d44\u6e90",
+                        "data": [
+                                    12.14,
+                                    12.14,
+                                    12.14,
+                                    12.14,
+                                    12.14,
+                                    12.14,
+                                    12.15,
+                                    11.49,
+                                    11.94,
+                                    12.14
+                        ],
+                        "borderColor": "#4ECDC4",
+                        "backgroundColor": "#4ECDC420",
+                        "fill": false,
+                        "tension": 0.3
+            },
+            {
+                        "label": "JavaScript\u8d44\u6e90",
+                        "data": [
+                                    19.41,
+                                    19.41,
+                                    19.41,
+                                    19.41,
+                                    19.41,
+                                    19.41,
+                                    19.43,
+                                    18.37,
+                                    19.09,
+                                    19.41
+                        ],
+                        "borderColor": "#45B7D1",
+                        "backgroundColor": "#45B7D120",
+                        "fill": false,
+                        "tension": 0.3
+            },
+            {
+                        "label": "WebAssembly\u8d44\u6e90",
+                        "data": [
+                                    1.41,
+                                    1.41,
+                                    1.41,
+                                    1.41,
+                                    1.41,
+                                    1.41,
+                                    1.41,
+                                    1.33,
+                                    1.39,
+                                    1.41
+                        ],
+                        "borderColor": "#96CEB4",
+                        "backgroundColor": "#96CEB420",
+                        "fill": false,
+                        "tension": 0.3
+            },
+            {
+                        "label": "XML\u8d44\u6e90",
+                        "data": [
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.0
+                        ],
+                        "borderColor": "#FECA57",
+                        "backgroundColor": "#FECA5720",
+                        "fill": false,
+                        "tension": 0.3
+            },
+            {
+                        "label": "\u56fe\u7247\u8d44\u6e90",
+                        "data": [
+                                    36.2,
+                                    36.2,
+                                    36.2,
+                                    36.2,
+                                    36.2,
+                                    36.2,
+                                    36.14,
+                                    39.59,
+                                    37.21,
+                                    36.2
+                        ],
+                        "borderColor": "#FF9FF3",
+                        "backgroundColor": "#FF9FF320",
+                        "fill": false,
+                        "tension": 0.3
+            },
+            {
+                        "label": "\u8d44\u6e90\u5305",
+                        "data": [
+                                    17.02,
+                                    17.02,
+                                    17.02,
+                                    17.02,
+                                    17.02,
+                                    17.02,
+                                    17.04,
+                                    16.15,
+                                    16.78,
+                                    17.02
+                        ],
+                        "borderColor": "#54A0FF",
+                        "backgroundColor": "#54A0FF20",
+                        "fill": false,
+                        "tension": 0.3
+            },
+            {
+                        "label": "\u97f3\u9891\u8d44\u6e90",
+                        "data": [
+                                    13.75,
+                                    13.75,
+                                    13.75,
+                                    13.75,
+                                    13.75,
+                                    13.75,
+                                    13.76,
+                                    13.01,
+                                    13.52,
+                                    13.75
+                        ],
+                        "borderColor": "#5F27CD",
+                        "backgroundColor": "#5F27CD20",
+                        "fill": false,
+                        "tension": 0.3
+            }
+]
+        };
+
+        // 创建资源占比线图
+        const percentageLineCtx = document.getElementById('percentageLineChart').getContext('2d');
+        new Chart(percentageLineCtx, {
+            type: 'line',
+            data: percentageLineData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '各测试资源体积占比变化趋势',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const value = context.parsed.y || 0;
+                                return `${label}: ${value.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '测试次数'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '占比 (%)'
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 4,
+                        hoverRadius: 6
+                    },
+                    line: {
+                        borderWidth: 2
                     }
                 }
             }
