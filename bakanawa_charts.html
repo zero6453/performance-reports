@@ -20,17 +20,13 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 30px;
         }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #007AFF;
-            padding-bottom: 15px;
-        }
-        h2 {
-            color: #555;
-            margin-top: 40px;
+        .info-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
             margin-bottom: 20px;
+            text-align: center;
         }
         .chart-container {
             position: relative;
@@ -85,11 +81,19 @@
         .data-table tr:hover {
             background-color: #f8f9fa;
         }
+        h2 {
+            color: #555;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎮 Bakanawa游戏性能分析图表</h1>
+        <div class="info-banner">
+            <h3>🎮 Bakanawa游戏性能分析图表</h3>
+            <p>生成时间: 2025-07-19 04:14:30 | 测试次数: 10</p>
+        </div>
         
         <!-- 统计数据卡片 -->
         <div class="stats-container">
@@ -116,13 +120,11 @@
         <div class="chart-container">
             <canvas id="totalTimeChart"></canvas>
         </div>
-
         <!-- 资源数量堆叠图 -->
         <h2>📊 各类型资源数量堆叠图</h2>
         <div class="chart-container">
             <canvas id="resourceStackedChart"></canvas>
         </div>
-
         <!-- 详细数据表格 -->
         <h2>📋 详细测试数据</h2>
         <table class="data-table">
@@ -146,25 +148,14 @@
                 <tr><td>10</td><td>10.64</td><td>bakanawa_unlimited10.csv</td></tr>
             </tbody>
         </table>
-
         <h2>🔢 资源类型数量分布表</h2>
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>资源类型</th>
-                    <th>测试1</th><th>测试2</th><th>测试3</th><th>测试4</th><th>测试5</th>
-                    <th>测试6</th><th>测试7</th><th>测试8</th><th>测试9</th><th>测试10</th>
+                    <th>资源类型</th><th>测试1</th><th>测试2</th><th>测试3</th><th>测试4</th><th>测试5</th><th>测试6</th><th>测试7</th><th>测试8</th><th>测试9</th><th>测试10</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr><td>HTML资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
-                <tr><td>JSON资源</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td></tr>
-                <tr><td>JavaScript资源</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td></tr>
-                <tr><td>WebAssembly资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
-                <tr><td>XML资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
-                <tr><td>图片资源</td><td>62</td><td>61</td><td>61</td><td>62</td><td>62</td><td>61</td><td>60</td><td>64</td><td>63</td><td>61</td></tr>
-                <tr><td>资源包</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>19</td><td>19</td><td>18</td></tr>
-                <tr><td>音频资源</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td></tr>
+            <tbody><tr><td>HTML资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>JSON资源</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td></tr><tr><td>JavaScript资源</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td></tr><tr><td>WebAssembly资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>XML资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>图片资源</td><td>62</td><td>61</td><td>61</td><td>62</td><td>62</td><td>61</td><td>60</td><td>64</td><td>63</td><td>61</td></tr><tr><td>资源包</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>19</td><td>19</td><td>18</td></tr><tr><td>音频资源</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td></tr>
             </tbody>
         </table>
     </div>
@@ -188,53 +179,6 @@
             }]
         };
 
-        // 资源数量堆叠图数据
-        const resourceStackedData = {
-            labels: ['测试1', '测试2', '测试3', '测试4', '测试5', '测试6', '测试7', '测试8', '测试9', '测试10'],
-            datasets: [
-                {
-                    label: 'JSON资源',
-                    data: [222, 222, 222, 222, 222, 222, 222, 222, 222, 222],
-                    backgroundColor: '#FF6B6B'
-                },
-                {
-                    label: '图片资源',
-                    data: [62, 61, 61, 62, 62, 61, 60, 64, 63, 61],
-                    backgroundColor: '#4ECDC4'
-                },
-                {
-                    label: 'JavaScript资源',
-                    data: [39, 39, 39, 39, 39, 39, 39, 39, 39, 39],
-                    backgroundColor: '#45B7D1'
-                },
-                {
-                    label: '音频资源',
-                    data: [39, 39, 39, 39, 39, 39, 39, 39, 39, 39],
-                    backgroundColor: '#96CEB4'
-                },
-                {
-                    label: '资源包',
-                    data: [18, 18, 18, 18, 18, 18, 18, 19, 19, 18],
-                    backgroundColor: '#FECA57'
-                },
-                {
-                    label: 'HTML资源',
-                    data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    backgroundColor: '#FF9FF3'
-                },
-                {
-                    label: 'WebAssembly资源',
-                    data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    backgroundColor: '#54A0FF'
-                },
-                {
-                    label: 'XML资源',
-                    data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    backgroundColor: '#5F27CD'
-                }
-            ]
-        };
-
         // 创建总耗时曲线图
         const totalTimeCtx = document.getElementById('totalTimeChart').getContext('2d');
         new Chart(totalTimeCtx, {
@@ -256,8 +200,6 @@
                 scales: {
                     y: {
                         beginAtZero: false,
-                        min: 9.5,
-                        max: 14,
                         title: {
                             display: true,
                             text: '总耗时(秒)'
@@ -277,6 +219,141 @@
                 }
             }
         });
+        
+        // 资源数量堆叠图数据
+        const resourceStackedData = {
+            labels: ['测试1', '测试2', '测试3', '测试4', '测试5', '测试6', '测试7', '测试8', '测试9', '测试10'],
+            datasets: [
+            {
+                        "label": "HTML\u8d44\u6e90",
+                        "data": [
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1
+                        ],
+                        "backgroundColor": "#FF6B6B"
+            },
+            {
+                        "label": "JSON\u8d44\u6e90",
+                        "data": [
+                                    222,
+                                    222,
+                                    222,
+                                    222,
+                                    222,
+                                    222,
+                                    222,
+                                    222,
+                                    222,
+                                    222
+                        ],
+                        "backgroundColor": "#4ECDC4"
+            },
+            {
+                        "label": "JavaScript\u8d44\u6e90",
+                        "data": [
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39
+                        ],
+                        "backgroundColor": "#45B7D1"
+            },
+            {
+                        "label": "WebAssembly\u8d44\u6e90",
+                        "data": [
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1
+                        ],
+                        "backgroundColor": "#96CEB4"
+            },
+            {
+                        "label": "XML\u8d44\u6e90",
+                        "data": [
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1,
+                                    1
+                        ],
+                        "backgroundColor": "#FECA57"
+            },
+            {
+                        "label": "\u56fe\u7247\u8d44\u6e90",
+                        "data": [
+                                    62,
+                                    61,
+                                    61,
+                                    62,
+                                    62,
+                                    61,
+                                    60,
+                                    64,
+                                    63,
+                                    61
+                        ],
+                        "backgroundColor": "#FF9FF3"
+            },
+            {
+                        "label": "\u8d44\u6e90\u5305",
+                        "data": [
+                                    18,
+                                    18,
+                                    18,
+                                    18,
+                                    18,
+                                    18,
+                                    18,
+                                    19,
+                                    19,
+                                    18
+                        ],
+                        "backgroundColor": "#54A0FF"
+            },
+            {
+                        "label": "\u97f3\u9891\u8d44\u6e90",
+                        "data": [
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39,
+                                    39
+                        ],
+                        "backgroundColor": "#5F27CD"
+            }
+]
+        };
 
         // 创建资源数量堆叠图
         const resourceStackedCtx = document.getElementById('resourceStackedChart').getContext('2d');
