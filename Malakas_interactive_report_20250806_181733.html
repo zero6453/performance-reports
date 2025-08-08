@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malakas - 游戏渲染与帧率表现分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h2 {
+            color: #7f8c8d;
+            margin: 10px 0 0 0;
+            font-weight: 300;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chart-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .chart-canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+        
+        .analysis-section {
+            margin: 40px 0;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .analysis-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .analysis-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .data-table-section {
+            margin-top: 40px;
+        }
+        
+        .data-table-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .table-container {
+            max-height: 600px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Malakas 游戏渲染与帧率表现分析报告</h1>
+            <h2>生成时间: 2025-08-06 18:17:33</h2>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">测试设备</span>
+                iPhone 14 Pro Max
+            </div>
+            <div class="info-item">
+                <span class="info-label">屏幕分辨率</span>
+                430 x 932
+            </div>
+            <div class="info-item">
+                <span class="info-label">测试时间</span>
+                2025-08-06 18:15:21
+            </div>
+            <div class="info-item">
+                <span class="info-label">数据样本数</span>
+                120
+            </div>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-container">
+                <div class="chart-title">Framerate (FPS)</div>
+                <canvas id="chart_Framerate_FPS" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Draw call</div>
+                <canvas id="chart_Draw_call" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">️Frame time(ms)</div>
+                <canvas id="chart_Frame_time" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Triangle</div>
+                <canvas id="chart_Triangle" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Game Logic(ms)</div>
+                <canvas id="chart_Game_Logic" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Physics(ms)</div>
+                <canvas id="chart_Physics" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Renderer(ms)</div>
+                <canvas id="chart_Renderer" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">GFX Texture Mem(M)</div>
+                <canvas id="chart_GFX_Texture_Mem" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">GFX Buffer Men(M)</div>
+                <canvas id="chart_GFX_Buffer_Men" class="chart-canvas"></canvas>
+            </div>
+        </div>
+        
+        <div class="analysis-section">
+            <h2>游戏性能指标分析</h2>
+            <div class="analysis-content">游戏性能分析报告
+============================================================
+生成时间: 2025-08-06 18:17:33
+数据时间点数量: 120
+
+Framerate (FPS):
+  平均维持在240.1FPS，表现优秀，整体表现稳定，符合流畅游戏体验标准
+  数据范围: 237.34 - 241.95，平均值: 240.13，标准差: 1.33
+
+Draw call:
+  主要维持在59次左右，偶尔出现峰值(最高109次)，无明显持续增长趋势，说明渲染批次控制良好
+  数据范围: 50.00 - 109.00，平均值: 58.78，标准差: 11.25
+
+Frame time(ms):
+  大部分时间保持在0.7ms左右，最高达到1.7ms，波动范围在合理区间内
+  数据范围: 0.40 - 1.70，平均值: 0.74，标准差: 0.22
+
+Triangle:
+  主要数值在3207个左右，数值相对稳定
+  数据范围: 3122.00 - 3494.00，平均值: 3207.35，标准差: 82.20
+
+Game Logic(ms):
+  耗时极低(大部分<1.0ms)，游戏逻辑处理效率很高，对整体性能影响很小
+  数据范围: 0.00 - 1.00，平均值: 0.05，标准差: 0.19
+
+Physics(ms):
+  全程接近0ms，表明测试场景物理计算量极小
+  数据范围: 0.00 - 0.00，平均值: 0.00，标准差: 0.00
+
+Renderer(ms):
+  渲染耗时平均0.5ms，渲染性能稳定
+  数据范围: 0.30 - 0.70，平均值: 0.48，标准差: 0.09
+
+GFX Texture Mem(M):
+  纹理内存稳定在191MB左右，无内存泄漏迹象
+  数据范围: 190.54 - 190.71，平均值: 190.55，标准差: 0.04
+
+GFX Buffer Men(M):
+  缓冲内存稳定在11.76MB，无内存泄漏迹象
+  数据范围: 11.72 - 11.77，平均值: 11.76，标准差: 0.01
+
+</div>
+        </div>
+        
+        <div class="data-table-section">
+            <h2>详细性能数据表</h2>
+            <div class="table-container">
+                <table class="data-table" id="dataTable">
+                    <!-- 表格内容将由JavaScript生成 -->
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>性能数据采集工具 | 生成时间: 2025-08-06 18:17:33</p>
+        </div>
+    </div>
+
+    <script>
+        // 性能数据
+        const performanceData = {
+  "timestamps": [
+    "2025-08-06 18:15:21",
+    "2025-08-06 18:15:33",
+    "2025-08-06 18:15:34",
+    "2025-08-06 18:15:35",
+    "2025-08-06 18:15:36",
+    "2025-08-06 18:15:37",
+    "2025-08-06 18:15:38",
+    "2025-08-06 18:15:39",
+    "2025-08-06 18:15:40",
+    "2025-08-06 18:15:41",
+    "2025-08-06 18:15:42",
+    "2025-08-06 18:15:43",
+    "2025-08-06 18:15:44",
+    "2025-08-06 18:15:45",
+    "2025-08-06 18:15:46",
+    "2025-08-06 18:15:47",
+    "2025-08-06 18:15:48",
+    "2025-08-06 18:15:49",
+    "2025-08-06 18:15:50",
+    "2025-08-06 18:15:51",
+    "2025-08-06 18:15:52",
+    "2025-08-06 18:15:53",
+    "2025-08-06 18:15:54",
+    "2025-08-06 18:15:55",
+    "2025-08-06 18:15:56",
+    "2025-08-06 18:15:57",
+    "2025-08-06 18:15:59",
+    "2025-08-06 18:16:00",
+    "2025-08-06 18:16:01",
+    "2025-08-06 18:16:02",
+    "2025-08-06 18:16:03",
+    "2025-08-06 18:16:04",
+    "2025-08-06 18:16:05",
+    "2025-08-06 18:16:06",
+    "2025-08-06 18:16:07",
+    "2025-08-06 18:16:08",
+    "2025-08-06 18:16:09",
+    "2025-08-06 18:16:10",
+    "2025-08-06 18:16:11",
+    "2025-08-06 18:16:12",
+    "2025-08-06 18:16:13",
+    "2025-08-06 18:16:14",
+    "2025-08-06 18:16:15",
+    "2025-08-06 18:16:16",
+    "2025-08-06 18:16:17",
+    "2025-08-06 18:16:18",
+    "2025-08-06 18:16:19",
+    "2025-08-06 18:16:20",
+    "2025-08-06 18:16:21",
+    "2025-08-06 18:16:22",
+    "2025-08-06 18:16:23",
+    "2025-08-06 18:16:24",
+    "2025-08-06 18:16:25",
+    "2025-08-06 18:16:26",
+    "2025-08-06 18:16:27",
+    "2025-08-06 18:16:28",
+    "2025-08-06 18:16:29",
+    "2025-08-06 18:16:30",
+    "2025-08-06 18:16:31",
+    "2025-08-06 18:16:32",
+    "2025-08-06 18:16:33",
+    "2025-08-06 18:16:34",
+    "2025-08-06 18:16:35",
+    "2025-08-06 18:16:36",
+    "2025-08-06 18:16:37",
+    "2025-08-06 18:16:38",
+    "2025-08-06 18:16:39",
+    "2025-08-06 18:16:40",
+    "2025-08-06 18:16:41",
+    "2025-08-06 18:16:42",
+    "2025-08-06 18:16:43",
+    "2025-08-06 18:16:44",
+    "2025-08-06 18:16:45",
+    "2025-08-06 18:16:46",
+    "2025-08-06 18:16:47",
+    "2025-08-06 18:16:48",
+    "2025-08-06 18:16:49",
+    "2025-08-06 18:16:50",
+    "2025-08-06 18:16:51",
+    "2025-08-06 18:16:52",
+    "2025-08-06 18:16:53",
+    "2025-08-06 18:16:54",
+    "2025-08-06 18:16:55",
+    "2025-08-06 18:16:56",
+    "2025-08-06 18:16:57",
+    "2025-08-06 18:16:58",
+    "2025-08-06 18:16:59",
+    "2025-08-06 18:17:00",
+    "2025-08-06 18:17:01",
+    "2025-08-06 18:17:02",
+    "2025-08-06 18:17:03",
+    "2025-08-06 18:17:04",
+    "2025-08-06 18:17:05",
+    "2025-08-06 18:17:06",
+    "2025-08-06 18:17:07",
+    "2025-08-06 18:17:08",
+    "2025-08-06 18:17:10",
+    "2025-08-06 18:17:11",
+    "2025-08-06 18:17:12",
+    "2025-08-06 18:17:13",
+    "2025-08-06 18:17:14",
+    "2025-08-06 18:17:15",
+    "2025-08-06 18:17:16",
+    "2025-08-06 18:17:17",
+    "2025-08-06 18:17:18",
+    "2025-08-06 18:17:19",
+    "2025-08-06 18:17:20",
+    "2025-08-06 18:17:21",
+    "2025-08-06 18:17:22",
+    "2025-08-06 18:17:23",
+    "2025-08-06 18:17:24",
+    "2025-08-06 18:17:25",
+    "2025-08-06 18:17:26",
+    "2025-08-06 18:17:27",
+    "2025-08-06 18:17:28",
+    "2025-08-06 18:17:29",
+    "2025-08-06 18:17:30",
+    "2025-08-06 18:17:31",
+    "2025-08-06 18:17:32",
+    "2025-08-06 18:17:33"
+  ],
+  "metrics": {
+    "Framerate (FPS)": [
+      239.81,
+      240.49,
+      239.33,
+      239.47,
+      239.86,
+      238.42,
+      239.95,
+      239.9,
+      239.47,
+      241.71,
+      237.91,
+      241.85,
+      239.86,
+      239.9,
+      241.85,
+      241.9,
+      239.86,
+      237.34,
+      239.95,
+      241.81,
+      238.61,
+      241.76,
+      241.37,
+      239.86,
+      238.42,
+      241.71,
+      241.81,
+      241.66,
+      239.66,
+      241.23,
+      239.71,
+      241.81,
+      238.8,
+      241.28,
+      239.76,
+      240.35,
+      238.71,
+      237.91,
+      239.57,
+      238.71,
+      239.76,
+      241.66,
+      241.85,
+      238.66,
+      238.56,
+      239.38,
+      241.66,
+      238.99,
+      241.9,
+      238.38,
+      238.28,
+      241.81,
+      237.81,
+      241.71,
+      239.76,
+      238.14,
+      238.38,
+      240.3,
+      241.61,
+      240.63,
+      240.44,
+      239.23,
+      241.85,
+      237.9,
+      241.81,
+      240.3,
+      239.76,
+      241.71,
+      240.63,
+      237.95,
+      238.61,
+      239.43,
+      239.81,
+      239.9,
+      237.9,
+      241.95,
+      239.95,
+      241.76,
+      239.47,
+      241.66,
+      239.38,
+      239.87,
+      241.76,
+      239.76,
+      241.71,
+      241.85,
+      238.56,
+      241.81,
+      241.66,
+      241.9,
+      239.81,
+      241.76,
+      238.1,
+      239.66,
+      239.9,
+      239.95,
+      237.67,
+      241.66,
+      241.61,
+      238.85,
+      241.9,
+      239.86,
+      239.95,
+      238.71,
+      238.85,
+      239.28,
+      240.68,
+      240.92,
+      239.95,
+      239.28,
+      239.95,
+      240.49,
+      238.85,
+      241.66,
+      241.66,
+      241.95,
+      241.76,
+      239.81,
+      239.66,
+      238.14
+    ],
+    "Draw call": [
+      58.0,
+      61.0,
+      63.0,
+      63.0,
+      63.0,
+      55.0,
+      56.0,
+      56.0,
+      55.0,
+      77.0,
+      56.0,
+      90.0,
+      55.0,
+      56.0,
+      66.0,
+      55.0,
+      89.0,
+      57.0,
+      61.0,
+      55.0,
+      55.0,
+      75.0,
+      55.0,
+      66.0,
+      66.0,
+      55.0,
+      51.0,
+      58.0,
+      53.0,
+      53.0,
+      78.0,
+      58.0,
+      52.0,
+      53.0,
+      58.0,
+      52.0,
+      79.0,
+      61.0,
+      61.0,
+      55.0,
+      61.0,
+      55.0,
+      55.0,
+      66.0,
+      84.0,
+      55.0,
+      99.0,
+      102.0,
+      63.0,
+      63.0,
+      63.0,
+      64.0,
+      55.0,
+      62.0,
+      62.0,
+      55.0,
+      82.0,
+      53.0,
+      52.0,
+      52.0,
+      73.0,
+      109.0,
+      58.0,
+      52.0,
+      52.0,
+      80.0,
+      52.0,
+      61.0,
+      61.0,
+      85.0,
+      61.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      54.0,
+      54.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      50.0,
+      50.0,
+      50.0,
+      50.0,
+      50.0,
+      50.0,
+      50.0,
+      50.0,
+      50.0,
+      50.0,
+      50.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      54.0,
+      54.0,
+      54.0,
+      53.0,
+      53.0,
+      53.0,
+      53.0,
+      50.0
+    ],
+    "Frame time(ms)": [
+      0.5,
+      0.8,
+      0.8,
+      0.8,
+      0.8,
+      0.8,
+      0.7,
+      1.6,
+      0.7,
+      0.7,
+      1.7,
+      0.8,
+      0.7,
+      0.6,
+      0.8,
+      0.7,
+      0.9,
+      0.6,
+      0.9,
+      0.5,
+      0.6,
+      0.7,
+      0.5,
+      0.6,
+      0.7,
+      0.6,
+      1.0,
+      1.5,
+      1.6,
+      0.7,
+      0.8,
+      0.7,
+      0.6,
+      0.6,
+      0.6,
+      0.4,
+      0.5,
+      1.3,
+      0.6,
+      0.8,
+      0.6,
+      0.6,
+      0.7,
+      0.8,
+      0.6,
+      0.6,
+      0.7,
+      0.7,
+      0.8,
+      0.7,
+      0.6,
+      0.6,
+      1.3,
+      0.5,
+      0.6,
+      0.6,
+      0.8,
+      0.6,
+      0.5,
+      0.5,
+      0.8,
+      0.6,
+      0.5,
+      0.6,
+      0.6,
+      0.8,
+      0.7,
+      0.8,
+      0.7,
+      0.9,
+      0.8,
+      0.7,
+      0.8,
+      0.9,
+      0.7,
+      0.7,
+      0.8,
+      0.8,
+      0.9,
+      0.8,
+      0.6,
+      0.6,
+      0.7,
+      0.8,
+      0.8,
+      0.6,
+      0.8,
+      0.9,
+      0.8,
+      0.8,
+      0.7,
+      0.7,
+      0.5,
+      0.8,
+      0.5,
+      0.6,
+      0.5,
+      0.7,
+      0.6,
+      0.5,
+      0.8,
+      0.7,
+      0.8,
+      0.7,
+      0.8,
+      1.0,
+      0.5,
+      0.8,
+      0.8,
+      0.6,
+      0.9,
+      0.9,
+      0.9,
+      0.8,
+      0.9,
+      0.7,
+      1.0,
+      0.7,
+      0.5,
+      0.8
+    ],
+    "Triangle": [
+      3184.0,
+      3203.0,
+      3485.0,
+      3494.0,
+      3483.0,
+      3219.0,
+      3218.0,
+      3203.0,
+      3214.0,
+      3303.0,
+      3210.0,
+      3360.0,
+      3205.0,
+      3203.0,
+      3236.0,
+      3205.0,
+      3283.0,
+      3214.0,
+      3209.0,
+      3201.0,
+      3208.0,
+      3259.0,
+      3207.0,
+      3244.0,
+      3245.0,
+      3199.0,
+      3139.0,
+      3183.0,
+      3183.0,
+      3173.0,
+      3271.0,
+      3178.0,
+      3177.0,
+      3176.0,
+      3171.0,
+      3159.0,
+      3257.0,
+      3220.0,
+      3212.0,
+      3208.0,
+      3214.0,
+      3204.0,
+      3212.0,
+      3235.0,
+      3276.0,
+      3206.0,
+      3365.0,
+      3422.0,
+      3479.0,
+      3489.0,
+      3492.0,
+      3228.0,
+      3205.0,
+      3215.0,
+      3217.0,
+      3199.0,
+      3305.0,
+      3177.0,
+      3168.0,
+      3168.0,
+      3242.0,
+      3323.0,
+      3169.0,
+      3168.0,
+      3158.0,
+      3256.0,
+      3175.0,
+      3207.0,
+      3207.0,
+      3293.0,
+      3212.0,
+      3163.0,
+      3167.0,
+      3159.0,
+      3163.0,
+      3163.0,
+      3161.0,
+      3163.0,
+      3167.0,
+      3160.0,
+      3163.0,
+      3171.0,
+      3162.0,
+      3163.0,
+      3167.0,
+      3160.0,
+      3166.0,
+      3168.0,
+      3123.0,
+      3129.0,
+      3128.0,
+      3126.0,
+      3130.0,
+      3126.0,
+      3126.0,
+      3132.0,
+      3122.0,
+      3127.0,
+      3131.0,
+      3160.0,
+      3164.0,
+      3170.0,
+      3160.0,
+      3163.0,
+      3163.0,
+      3172.0,
+      3159.0,
+      3163.0,
+      3171.0,
+      3159.0,
+      3163.0,
+      3171.0,
+      3162.0,
+      3164.0,
+      3171.0,
+      3160.0,
+      3163.0,
+      3169.0,
+      3158.0,
+      3124.0
+    ],
+    "Game Logic(ms)": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.1,
+      0.9,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.1,
+      0.2,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.1,
+      0.0,
+      0.0,
+      0.9,
+      0.9,
+      0.1,
+      0.0,
+      0.1,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.7,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.7,
+      0.0,
+      0.0,
+      0.1,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.1,
+      0.1,
+      0.0,
+      0.1,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Physics(ms)": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Renderer(ms)": [
+      0.4,
+      0.6,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.4,
+      0.5,
+      0.5,
+      0.6,
+      0.5,
+      0.5,
+      0.6,
+      0.4,
+      0.6,
+      0.5,
+      0.5,
+      0.3,
+      0.4,
+      0.5,
+      0.3,
+      0.5,
+      0.5,
+      0.4,
+      0.7,
+      0.4,
+      0.5,
+      0.5,
+      0.6,
+      0.4,
+      0.4,
+      0.4,
+      0.3,
+      0.3,
+      0.4,
+      0.4,
+      0.3,
+      0.5,
+      0.4,
+      0.4,
+      0.5,
+      0.6,
+      0.4,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.5,
+      0.4,
+      0.3,
+      0.3,
+      0.6,
+      0.4,
+      0.4,
+      0.3,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.6,
+      0.5,
+      0.5,
+      0.6,
+      0.6,
+      0.5,
+      0.4,
+      0.5,
+      0.5,
+      0.6,
+      0.5,
+      0.4,
+      0.4,
+      0.5,
+      0.6,
+      0.6,
+      0.4,
+      0.6,
+      0.6,
+      0.6,
+      0.5,
+      0.5,
+      0.5,
+      0.4,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.4,
+      0.4,
+      0.3,
+      0.6,
+      0.5,
+      0.6,
+      0.5,
+      0.5,
+      0.6,
+      0.4,
+      0.5,
+      0.5,
+      0.4,
+      0.5,
+      0.6,
+      0.5,
+      0.5,
+      0.6,
+      0.5,
+      0.6,
+      0.5,
+      0.4,
+      0.5
+    ],
+    "GFX Texture Mem(M)": [
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.71,
+      190.71,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.71,
+      190.71,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.71,
+      190.71,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.71,
+      190.71,
+      190.71,
+      190.54,
+      190.54,
+      190.54,
+      190.54,
+      190.54
+    ],
+    "GFX Buffer Men(M)": [
+      11.72,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.75,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.76,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77,
+      11.77
+    ]
+  }
+};
+        
+        // 图表配置 - 使用更美观的渐变色
+        const chartConfigs = {
+            'Framerate (FPS)': {
+                borderColor: 'rgb(34, 197, 94)',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                unit: 'FPS',
+                yAxisMax: 70
+            },
+            'Draw call': {
+                borderColor: 'rgb(239, 68, 68)',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                unit: '次',
+                yAxisMax: null
+            },
+            'Frame time(ms)': {
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                unit: 'ms',
+                yAxisMax: null
+            },
+            'Triangle': {
+                borderColor: 'rgb(245, 158, 11)',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                unit: '个',
+                yAxisMax: null
+            },
+            'Game Logic(ms)': {
+                borderColor: 'rgb(16, 185, 129)',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                unit: 'ms',
+                yAxisMax: null
+            },
+            'Physics(ms)': {
+                borderColor: 'rgb(139, 92, 246)',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                unit: 'ms',
+                yAxisMax: null
+            },
+            'Renderer(ms)': {
+                borderColor: 'rgb(249, 115, 22)',
+                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                unit: 'ms',
+                yAxisMax: null
+            },
+            'GFX Texture Mem(M)': {
+                borderColor: 'rgb(107, 114, 128)',
+                backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                unit: 'MB',
+                yAxisMax: null
+            },
+            'GFX Buffer Men(M)': {
+                borderColor: 'rgb(99, 102, 241)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                unit: 'MB',
+                yAxisMax: null
+            }
+        };
+        
+        // 创建图表
+        function createCharts() {
+            // 指标名称到canvas ID的映射
+            const metricToCanvasId = {
+                'Framerate (FPS)': 'chart_Framerate_FPS',
+                'Draw call': 'chart_Draw_call',
+                'Frame time(ms)': 'chart_Frame_time',
+                'Triangle': 'chart_Triangle',
+                'Game Logic(ms)': 'chart_Game_Logic',
+                'Physics(ms)': 'chart_Physics',
+                'Renderer(ms)': 'chart_Renderer',
+                'GFX Texture Mem(M)': 'chart_GFX_Texture_Mem',
+                'GFX Buffer Men(M)': 'chart_GFX_Buffer_Men'
+            };
+            
+            Object.keys(performanceData.metrics).forEach(metricName => {
+                const canvasId = metricToCanvasId[metricName];
+                const canvas = document.getElementById(canvasId);
+                
+                if (!canvas) {
+                    console.warn('Canvas not found for metric:', metricName, 'with ID:', canvasId);
+                    return;
+                }
+                
+                const config = chartConfigs[metricName] || {
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    unit: '',
+                    yAxisMax: null
+                };
+                
+                const data = performanceData.metrics[metricName];
+                
+                new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: performanceData.timestamps,
+                        datasets: [{
+                            label: metricName,
+                            data: data,
+                            borderColor: config.borderColor,
+                            backgroundColor: config.backgroundColor,
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 1,
+                            pointHoverRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return metricName + ': ' + context.parsed.y.toFixed(2) + ' ' + config.unit;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: '时间'
+                                },
+                                ticks: {
+                                    maxTicksLimit: 10
+                                }
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: metricName + ' (' + config.unit + ')'
+                                },
+                                max: config.yAxisMax
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+            });
+        }
+        
+        // 生成数据表格
+        function generateDataTable() {
+            const table = document.getElementById('dataTable');
+            
+            // 创建表头
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            
+            // 时间列
+            const timeHeader = document.createElement('th');
+            timeHeader.textContent = '时间';
+            headerRow.appendChild(timeHeader);
+            
+            // 指标列
+            Object.keys(performanceData.metrics).forEach(metricName => {
+                const th = document.createElement('th');
+                th.textContent = metricName;
+                headerRow.appendChild(th);
+            });
+            
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            
+            // 创建表体
+            const tbody = document.createElement('tbody');
+            
+            for (let i = 0; i < performanceData.timestamps.length; i++) {
+                const row = document.createElement('tr');
+                
+                // 时间列
+                const timeCell = document.createElement('td');
+                timeCell.textContent = performanceData.timestamps[i];
+                row.appendChild(timeCell);
+                
+                // 数据列
+                Object.keys(performanceData.metrics).forEach(metricName => {
+                    const cell = document.createElement('td');
+                    const value = performanceData.metrics[metricName][i];
+                    cell.textContent = value !== undefined ? value.toFixed(2) : 'N/A';
+                    row.appendChild(cell);
+                });
+                
+                tbody.appendChild(row);
+            }
+            
+            table.appendChild(tbody);
+        }
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            createCharts();
+            generateDataTable();
+        });
+    </script>
+</body>
+</html>

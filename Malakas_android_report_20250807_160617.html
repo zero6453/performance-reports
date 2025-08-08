@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malakas - 游戏渲染与帧率表现分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h2 {
+            color: #7f8c8d;
+            margin: 10px 0 0 0;
+            font-weight: 300;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chart-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .chart-canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+        
+        .analysis-section {
+            margin: 40px 0;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .analysis-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .analysis-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .data-table-section {
+            margin-top: 40px;
+        }
+        
+        .data-table-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .table-container {
+            max-height: 600px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Malakas 游戏渲染与帧率表现分析报告</h1>
+            <h2>生成时间: 2025-08-07 16:06:17</h2>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">测试设备</span>
+                Android真机
+            </div>
+            <div class="info-item">
+                <span class="info-label">获取方法</span>
+                Android Remote Debugging
+            </div>
+            <div class="info-item">
+                <span class="info-label">测试时间</span>
+                2025-08-07 16:05:17
+            </div>
+            <div class="info-item">
+                <span class="info-label">数据样本数</span>
+                60
+            </div>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-container">
+                <div class="chart-title">Framerate (FPS)</div>
+                <canvas id="chart_Framerate_FPS" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Draw call</div>
+                <canvas id="chart_Draw_call" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">️Frame time(ms)</div>
+                <canvas id="chart_Frame_time" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Triangle</div>
+                <canvas id="chart_Triangle" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Game Logic(ms)</div>
+                <canvas id="chart_Game_Logic" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Physics(ms)</div>
+                <canvas id="chart_Physics" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Renderer(ms)</div>
+                <canvas id="chart_Renderer" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">GFX Texture Mem(M)</div>
+                <canvas id="chart_GFX_Texture_Mem" class="chart-canvas"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">GFX Buffer Men(M)</div>
+                <canvas id="chart_GFX_Buffer_Men" class="chart-canvas"></canvas>
+            </div>
+        </div>
+        
+        <div class="analysis-section">
+            <h2>游戏性能指标分析</h2>
+            <div class="analysis-content">游戏性能分析报告
+============================================================
+生成时间: 2025-08-07 16:06:17
+数据时间点数量: 60
+
+Framerate (FPS):
+  平均维持在118.3FPS，表现优秀，符合流畅游戏体验标准
+  数据范围: 99.03 - 125.00，平均值: 118.26，标准差: 5.20
+
+Draw call:
+  主要维持在64次左右，偶尔出现峰值(最高103次)，存在一定波动，建议关注渲染优化
+  数据范围: 51.00 - 103.00，平均值: 64.13，标准差: 13.88
+
+Frame time(ms):
+  大部分时间保持在4.2ms左右，最高达到14.2ms，波动范围在合理区间内
+  数据范围: 2.10 - 14.20，平均值: 4.22，标准差: 1.83
+
+Triangle:
+  主要数值在3254个左右，数值相对稳定
+  数据范围: 3162.00 - 3490.00，平均值: 3253.98，标准差: 86.96
+
+Game Logic(ms):
+  耗时极低(大部分<10.9ms)，游戏逻辑处理效率很高，对整体性能影响很小
+  数据范围: 0.00 - 10.90，平均值: 0.58，标准差: 1.69
+
+Physics(ms):
+  全程接近0ms，表明测试场景物理计算量极小
+  数据范围: 0.00 - 0.00，平均值: 0.00，标准差: 0.00
+
+Renderer(ms):
+  渲染耗时平均2.4ms，渲染性能稳定
+  数据范围: 1.30 - 6.20，平均值: 2.35，标准差: 0.73
+
+GFX Texture Mem(M):
+  纹理内存稳定在145MB左右，无内存泄漏迹象
+  数据范围: 145.20 - 145.34，平均值: 145.23，标准差: 0.06
+
+GFX Buffer Men(M):
+  缓冲内存稳定在11.59MB，无内存泄漏迹象
+  数据范围: 11.55 - 11.61，平均值: 11.59，标准差: 0.02
+
+</div>
+        </div>
+        
+        <div class="data-table-section">
+            <h2>详细性能数据表</h2>
+            <div class="table-container">
+                <table class="data-table" id="dataTable">
+                    <!-- 表格内容将由JavaScript生成 -->
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>性能数据采集工具 | 生成时间: 2025-08-07 16:06:17</p>
+        </div>
+    </div>
+
+    <script>
+        // 性能数据
+        const performanceData = {
+  "timestamps": [
+    "2025-08-07 16:05:17",
+    "2025-08-07 16:05:18",
+    "2025-08-07 16:05:19",
+    "2025-08-07 16:05:20",
+    "2025-08-07 16:05:21",
+    "2025-08-07 16:05:22",
+    "2025-08-07 16:05:23",
+    "2025-08-07 16:05:24",
+    "2025-08-07 16:05:25",
+    "2025-08-07 16:05:26",
+    "2025-08-07 16:05:27",
+    "2025-08-07 16:05:28",
+    "2025-08-07 16:05:29",
+    "2025-08-07 16:05:30",
+    "2025-08-07 16:05:31",
+    "2025-08-07 16:05:32",
+    "2025-08-07 16:05:33",
+    "2025-08-07 16:05:34",
+    "2025-08-07 16:05:35",
+    "2025-08-07 16:05:36",
+    "2025-08-07 16:05:37",
+    "2025-08-07 16:05:38",
+    "2025-08-07 16:05:39",
+    "2025-08-07 16:05:40",
+    "2025-08-07 16:05:41",
+    "2025-08-07 16:05:42",
+    "2025-08-07 16:05:43",
+    "2025-08-07 16:05:44",
+    "2025-08-07 16:05:45",
+    "2025-08-07 16:05:46",
+    "2025-08-07 16:05:47",
+    "2025-08-07 16:05:49",
+    "2025-08-07 16:05:50",
+    "2025-08-07 16:05:51",
+    "2025-08-07 16:05:52",
+    "2025-08-07 16:05:53",
+    "2025-08-07 16:05:54",
+    "2025-08-07 16:05:55",
+    "2025-08-07 16:05:56",
+    "2025-08-07 16:05:57",
+    "2025-08-07 16:05:58",
+    "2025-08-07 16:05:59",
+    "2025-08-07 16:06:00",
+    "2025-08-07 16:06:01",
+    "2025-08-07 16:06:02",
+    "2025-08-07 16:06:03",
+    "2025-08-07 16:06:04",
+    "2025-08-07 16:06:05",
+    "2025-08-07 16:06:06",
+    "2025-08-07 16:06:07",
+    "2025-08-07 16:06:08",
+    "2025-08-07 16:06:09",
+    "2025-08-07 16:06:10",
+    "2025-08-07 16:06:11",
+    "2025-08-07 16:06:12",
+    "2025-08-07 16:06:13",
+    "2025-08-07 16:06:14",
+    "2025-08-07 16:06:15",
+    "2025-08-07 16:06:16",
+    "2025-08-07 16:06:17"
+  ],
+  "metrics": {
+    "Framerate (FPS)": [
+      121.06,
+      121.34,
+      119.84,
+      118.76,
+      120.18,
+      121.09,
+      121.83,
+      121.9,
+      121.25,
+      121.85,
+      121.27,
+      119.33,
+      121.56,
+      125.0,
+      121.71,
+      109.58,
+      119.63,
+      99.03,
+      121.39,
+      119.93,
+      119.28,
+      121.33,
+      119.86,
+      121.43,
+      119.98,
+      120.6,
+      116.83,
+      103.87,
+      121.3,
+      120.25,
+      121.85,
+      118.51,
+      119.02,
+      119.96,
+      103.34,
+      119.73,
+      119.35,
+      116.44,
+      119.71,
+      119.78,
+      123.11,
+      119.38,
+      103.66,
+      106.78,
+      119.95,
+      118.68,
+      120.2,
+      115.19,
+      111.44,
+      119.88,
+      120.24,
+      115.6,
+      120.29,
+      117.39,
+      121.85,
+      119.84,
+      119.44,
+      119.51,
+      115.82,
+      117.34
+    ],
+    "Draw call": [
+      71.0,
+      57.0,
+      55.0,
+      51.0,
+      51.0,
+      51.0,
+      91.0,
+      57.0,
+      55.0,
+      55.0,
+      76.0,
+      54.0,
+      54.0,
+      55.0,
+      55.0,
+      55.0,
+      98.0,
+      60.0,
+      62.0,
+      62.0,
+      62.0,
+      62.0,
+      62.0,
+      56.0,
+      55.0,
+      55.0,
+      55.0,
+      55.0,
+      78.0,
+      57.0,
+      52.0,
+      52.0,
+      82.0,
+      51.0,
+      83.0,
+      67.0,
+      93.0,
+      51.0,
+      51.0,
+      54.0,
+      76.0,
+      90.0,
+      60.0,
+      54.0,
+      84.0,
+      65.0,
+      54.0,
+      80.0,
+      89.0,
+      55.0,
+      76.0,
+      85.0,
+      55.0,
+      72.0,
+      61.0,
+      55.0,
+      55.0,
+      55.0,
+      66.0,
+      103.0
+    ],
+    "Frame time(ms)": [
+      4.6,
+      3.7,
+      4.0,
+      4.1,
+      3.7,
+      2.9,
+      2.9,
+      2.6,
+      2.4,
+      2.8,
+      4.9,
+      2.1,
+      4.8,
+      4.3,
+      5.0,
+      6.2,
+      3.3,
+      3.6,
+      3.7,
+      3.8,
+      5.0,
+      4.8,
+      3.4,
+      14.2,
+      4.5,
+      8.3,
+      3.9,
+      3.3,
+      4.1,
+      5.2,
+      4.1,
+      3.5,
+      2.4,
+      3.9,
+      4.5,
+      7.5,
+      3.5,
+      3.9,
+      4.2,
+      3.3,
+      3.2,
+      5.0,
+      3.3,
+      3.2,
+      3.4,
+      3.3,
+      2.9,
+      5.0,
+      3.7,
+      7.3,
+      3.5,
+      3.6,
+      3.0,
+      3.4,
+      4.2,
+      3.5,
+      3.2,
+      8.2,
+      4.1,
+      3.4
+    ],
+    "Triangle": [
+      3249.0,
+      3211.0,
+      3218.0,
+      3166.0,
+      3162.0,
+      3177.0,
+      3294.0,
+      3187.0,
+      3229.0,
+      3209.0,
+      3266.0,
+      3227.0,
+      3213.0,
+      3207.0,
+      3218.0,
+      3207.0,
+      3374.0,
+      3214.0,
+      3487.0,
+      3486.0,
+      3490.0,
+      3488.0,
+      3485.0,
+      3188.0,
+      3211.0,
+      3202.0,
+      3208.0,
+      3213.0,
+      3272.0,
+      3203.0,
+      3173.0,
+      3172.0,
+      3279.0,
+      3176.0,
+      3289.0,
+      3221.0,
+      3333.0,
+      3173.0,
+      3177.0,
+      3202.0,
+      3276.0,
+      3315.0,
+      3210.0,
+      3196.0,
+      3303.0,
+      3231.0,
+      3204.0,
+      3299.0,
+      3325.0,
+      3211.0,
+      3288.0,
+      3307.0,
+      3217.0,
+      3253.0,
+      3201.0,
+      3207.0,
+      3216.0,
+      3205.0,
+      3231.0,
+      3388.0
+    ],
+    "Game Logic(ms)": [
+      0.2,
+      0.2,
+      0.1,
+      0.1,
+      0.2,
+      0.2,
+      0.0,
+      0.1,
+      0.2,
+      0.1,
+      0.6,
+      0.1,
+      0.1,
+      0.0,
+      0.1,
+      0.2,
+      0.1,
+      0.3,
+      0.1,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      10.9,
+      0.2,
+      5.2,
+      0.5,
+      0.5,
+      0.1,
+      0.2,
+      0.2,
+      0.5,
+      0.0,
+      0.0,
+      0.4,
+      0.2,
+      0.1,
+      0.1,
+      0.1,
+      0.0,
+      0.1,
+      0.4,
+      0.2,
+      0.0,
+      0.1,
+      0.1,
+      0.5,
+      0.1,
+      0.2,
+      4.1,
+      0.0,
+      0.2,
+      0.4,
+      0.1,
+      0.1,
+      0.1,
+      0.2,
+      4.8,
+      0.3,
+      0.1
+    ],
+    "Physics(ms)": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "Renderer(ms)": [
+      2.7,
+      2.1,
+      2.7,
+      2.4,
+      2.5,
+      2.0,
+      2.0,
+      1.7,
+      1.4,
+      1.7,
+      2.6,
+      1.3,
+      3.0,
+      2.8,
+      2.8,
+      4.3,
+      1.9,
+      2.3,
+      2.2,
+      2.4,
+      3.4,
+      3.1,
+      2.0,
+      2.0,
+      2.5,
+      2.0,
+      1.9,
+      1.7,
+      2.4,
+      2.8,
+      2.4,
+      2.1,
+      1.4,
+      2.5,
+      2.7,
+      6.2,
+      2.4,
+      2.1,
+      2.3,
+      2.1,
+      1.9,
+      3.3,
+      1.8,
+      2.0,
+      2.2,
+      2.1,
+      1.5,
+      3.3,
+      2.6,
+      2.4,
+      2.4,
+      2.0,
+      1.7,
+      2.2,
+      2.4,
+      2.2,
+      1.8,
+      2.4,
+      2.2,
+      2.0
+    ],
+    "GFX Texture Mem(M)": [
+      145.3,
+      145.34,
+      145.34,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.21,
+      145.21,
+      145.21,
+      145.21,
+      145.21,
+      145.21,
+      145.34,
+      145.34,
+      145.34,
+      145.34,
+      145.34,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.2,
+      145.34,
+      145.34,
+      145.34,
+      145.34,
+      145.34,
+      145.2
+    ],
+    "GFX Buffer Men(M)": [
+      11.55,
+      11.55,
+      11.55,
+      11.55,
+      11.55,
+      11.55,
+      11.56,
+      11.56,
+      11.56,
+      11.56,
+      11.56,
+      11.56,
+      11.56,
+      11.56,
+      11.56,
+      11.56,
+      11.57,
+      11.57,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.59,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.6,
+      11.61,
+      11.61,
+      11.61,
+      11.61,
+      11.61,
+      11.61,
+      11.61,
+      11.61,
+      11.61,
+      11.61,
+      11.61,
+      11.61
+    ]
+  }
+};
+        
+        // 图表配置 - 使用更美观的渐变色
+        const chartConfigs = {
+            'Framerate (FPS)': {
+                borderColor: 'rgb(34, 197, 94)',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                unit: 'FPS',
+                yAxisMax: null
+            },
+            'Draw call': {
+                borderColor: 'rgb(239, 68, 68)',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                unit: '次',
+                yAxisMax: null
+            },
+            'Frame time(ms)': {
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                unit: 'ms',
+                yAxisMax: null
+            },
+            'Triangle': {
+                borderColor: 'rgb(245, 158, 11)',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                unit: '个',
+                yAxisMax: null
+            },
+            'Game Logic(ms)': {
+                borderColor: 'rgb(16, 185, 129)',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                unit: 'ms',
+                yAxisMax: null
+            },
+            'Physics(ms)': {
+                borderColor: 'rgb(139, 92, 246)',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                unit: 'ms',
+                yAxisMax: null
+            },
+            'Renderer(ms)': {
+                borderColor: 'rgb(249, 115, 22)',
+                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                unit: 'ms',
+                yAxisMax: null
+            },
+            'GFX Texture Mem(M)': {
+                borderColor: 'rgb(107, 114, 128)',
+                backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                unit: 'MB',
+                yAxisMax: null
+            },
+            'GFX Buffer Men(M)': {
+                borderColor: 'rgb(99, 102, 241)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                unit: 'MB',
+                yAxisMax: null
+            }
+        };
+        
+        // 创建图表
+        function createCharts() {
+            // 指标名称到canvas ID的映射
+            const metricToCanvasId = {
+                'Framerate (FPS)': 'chart_Framerate_FPS',
+                'Draw call': 'chart_Draw_call',
+                'Frame time(ms)': 'chart_Frame_time',
+                'Triangle': 'chart_Triangle',
+                'Game Logic(ms)': 'chart_Game_Logic',
+                'Physics(ms)': 'chart_Physics',
+                'Renderer(ms)': 'chart_Renderer',
+                'GFX Texture Mem(M)': 'chart_GFX_Texture_Mem',
+                'GFX Buffer Men(M)': 'chart_GFX_Buffer_Men'
+            };
+            
+            Object.keys(performanceData.metrics).forEach(metricName => {
+                const canvasId = metricToCanvasId[metricName];
+                const canvas = document.getElementById(canvasId);
+                
+                if (!canvas) {
+                    console.warn('Canvas not found for metric:', metricName, 'with ID:', canvasId);
+                    return;
+                }
+                
+                const config = chartConfigs[metricName] || {
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    unit: '',
+                    yAxisMax: null
+                };
+                
+                const data = performanceData.metrics[metricName];
+                
+                new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: performanceData.timestamps,
+                        datasets: [{
+                            label: metricName,
+                            data: data,
+                            borderColor: config.borderColor,
+                            backgroundColor: config.backgroundColor,
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 1,
+                            pointHoverRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return metricName + ': ' + context.parsed.y.toFixed(2) + ' ' + config.unit;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: '时间'
+                                },
+                                ticks: {
+                                    maxTicksLimit: 10
+                                }
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: metricName + ' (' + config.unit + ')'
+                                },
+                                max: config.yAxisMax
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+            });
+        }
+        
+        // 生成数据表格
+        function generateDataTable() {
+            const table = document.getElementById('dataTable');
+            
+            // 创建表头
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            
+            // 时间列
+            const timeHeader = document.createElement('th');
+            timeHeader.textContent = '时间';
+            headerRow.appendChild(timeHeader);
+            
+            // 指标列
+            Object.keys(performanceData.metrics).forEach(metricName => {
+                const th = document.createElement('th');
+                th.textContent = metricName;
+                headerRow.appendChild(th);
+            });
+            
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            
+            // 创建表体
+            const tbody = document.createElement('tbody');
+            
+            for (let i = 0; i < performanceData.timestamps.length; i++) {
+                const row = document.createElement('tr');
+                
+                // 时间列
+                const timeCell = document.createElement('td');
+                timeCell.textContent = performanceData.timestamps[i];
+                row.appendChild(timeCell);
+                
+                // 数据列
+                Object.keys(performanceData.metrics).forEach(metricName => {
+                    const cell = document.createElement('td');
+                    const value = performanceData.metrics[metricName][i];
+                    cell.textContent = value !== undefined ? value.toFixed(2) : 'N/A';
+                    row.appendChild(cell);
+                });
+                
+                tbody.appendChild(row);
+            }
+            
+            table.appendChild(tbody);
+        }
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            createCharts();
+            generateDataTable();
+        });
+    </script>
+</body>
+</html>

@@ -92,86 +92,124 @@
     <div class="container">
         <div class="info-banner">
             <h3>🎮 Bakanawa游戏性能分析图表</h3>
-            <p>生成时间: 2025-07-19 05:35:10 | 测试次数: 10</p>
+            <p>生成时间: 2025-08-07 11:12:36 | 测试次数: 1</p>
         </div>
         
         <!-- 统计数据卡片 -->
         <div class="stats-container">
             <div class="stat-card">
-                <div class="stat-value">11.20s</div>
+                <div class="stat-value">3.87s</div>
                 <div class="stat-label">平均总耗时</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">10.26s</div>
+                <div class="stat-value">3.87s</div>
                 <div class="stat-label">最短耗时</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">13.28s</div>
+                <div class="stat-value">3.87s</div>
                 <div class="stat-label">最长耗时</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">0.94s</div>
+                <div class="stat-value">0.00s</div>
                 <div class="stat-label">标准差</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">13.56MB</div>
-                <div class="stat-label">平均总体积</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">13.44MB</div>
+                <div class="stat-value">0.00MB</div>
                 <div class="stat-label">最小体积</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">14.23MB</div>
+                <div class="stat-value">0.00MB</div>
                 <div class="stat-label">最大体积</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">10</div>
+                <div class="stat-value">354</div>
+                <div class="stat-label">平均请求数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1</div>
                 <div class="stat-label">测试次数</div>
             </div>
         </div>
 
-        <!-- 总耗时曲线图 -->
-        <h2>📈 总耗时曲线图</h2>
+        <!-- HAR文件分析耗时 -->
+        <h2>HAR文件分析耗时</h2>
         <div class="chart-container">
             <canvas id="totalTimeChart"></canvas>
         </div>
-        <!-- 资源数量堆叠图 -->
-        <h2>📊 各类型资源数量堆叠图</h2>
+        
+        <!-- 游戏加载时间曲线图 -->
+        <h2>Game Total Load Time</h2>
         <div class="chart-container">
-            <canvas id="resourceStackedChart"></canvas>
+            <canvas id="gameLoadTimeChart"></canvas>
+        </div>
+        
+        <!-- HAR文件加载差值图表 -->
+        <h2>HAR文件加载差值</h2>
+        <div class="chart-container">
+            <canvas id="timeDifferenceChart"></canvas>
+        </div>
+        <h2>详细分析数据表</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>测试编号</th>
+                    <th>总请求数</th>
+                    <th>总数据量(MB)</th>
+                    <th>总耗时(秒)</th>
+                    <th>请求成功率(%)</th>
+                    <th>缓存命中率(%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td>111104</td>
+                        <td>354</td>
+                        <td>0.00</td>
+                        <td>3.87</td>
+                        <td>99.7%</td>
+                        <td>0.0%</td>
+                    </tr>
+            </tbody>
+        </table>
+        
+        <!-- 总请求数变化趋势 -->
+        <h2>总请求数变化趋势</h2>
+        <div class="chart-container">
+            <canvas id="requestCountChart"></canvas>
         </div>
         
         <!-- 资源体积堆叠图 -->
-        <h2>💾 各类型资源体积堆叠图</h2>
+        <h2>各类型资源体积堆叠图</h2>
         <div class="chart-container">
             <canvas id="volumeStackedChart"></canvas>
         </div>
         
         <!-- 资源占比分布图 -->
-        <h2>🥧 各测试资源体积占比分布</h2>
+        <h2>各测试资源体积占比分布</h2>
         <div class="chart-container">
             <canvas id="percentageLineChart"></canvas>
         </div>
-        <h2>🔢 资源类型数量分布表</h2>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>资源类型</th><th>测试1</th><th>测试2</th><th>测试3</th><th>测试4</th><th>测试5</th><th>测试6</th><th>测试7</th><th>测试8</th><th>测试9</th><th>测试10</th>
-                </tr>
-            </thead>
-            <tbody><tr><td>HTML资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>JSON资源</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td><td>222</td></tr><tr><td>JavaScript资源</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td></tr><tr><td>WebAssembly资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>XML资源</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>图片资源</td><td>62</td><td>61</td><td>61</td><td>62</td><td>62</td><td>61</td><td>60</td><td>64</td><td>63</td><td>61</td></tr><tr><td>资源包</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>18</td><td>19</td><td>19</td><td>18</td></tr><tr><td>音频资源</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td><td>39</td></tr>
-            </tbody>
-        </table>
+        
+        <!-- HTTP状态码分布 -->
+        <h2>HTTP状态码分布</h2>
+        <div class="chart-container">
+            <canvas id="statusCodeChart"></canvas>
+        </div>
+        
+        <!-- 缓存命中率分析 -->
+        <h2>缓存命中率趋势</h2>
+        <div class="chart-container">
+            <canvas id="cacheHitRateChart"></canvas>
+        </div>
     </div>
 
     <script>
         // 总耗时曲线图数据
         const totalTimeData = {
-            labels: ['测试1', '测试2', '测试3', '测试4', '测试5', '测试6', '测试7', '测试8', '测试9', '测试10'],
+            labels: ['111104'],
             datasets: [{
                 label: '总耗时(秒)',
-                data: [10.27, 11.36, 10.26, 10.56, 10.56, 11.56, 11.67, 11.87, 13.28, 10.64],
+                data: [3.87],
                 borderColor: '#007AFF',
                 backgroundColor: 'rgba(0, 122, 255, 0.1)',
                 borderWidth: 3,
@@ -195,7 +233,7 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Bakanawa游戏总耗时变化趋势',
+                        text: 'HAR文件分析耗时变化趋势',
                         font: { size: 16, weight: 'bold' }
                     },
                     legend: {
@@ -225,181 +263,263 @@
             }
         });
         
-        // 资源数量堆叠图数据
-        const resourceStackedData = {
-            labels: ['测试1', '测试2', '测试3', '测试4', '测试5', '测试6', '测试7', '测试8', '测试9', '测试10'],
-            datasets: [
-            {
-                        "label": "HTML\u8d44\u6e90",
-                        "data": [
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1
-                        ],
-                        "backgroundColor": "#FF6B6B"
-            },
-            {
-                        "label": "JSON\u8d44\u6e90",
-                        "data": [
-                                    222,
-                                    222,
-                                    222,
-                                    222,
-                                    222,
-                                    222,
-                                    222,
-                                    222,
-                                    222,
-                                    222
-                        ],
-                        "backgroundColor": "#4ECDC4"
-            },
-            {
-                        "label": "JavaScript\u8d44\u6e90",
-                        "data": [
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39
-                        ],
-                        "backgroundColor": "#45B7D1"
-            },
-            {
-                        "label": "WebAssembly\u8d44\u6e90",
-                        "data": [
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1
-                        ],
-                        "backgroundColor": "#96CEB4"
-            },
-            {
-                        "label": "XML\u8d44\u6e90",
-                        "data": [
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1,
-                                    1
-                        ],
-                        "backgroundColor": "#FECA57"
-            },
-            {
-                        "label": "\u56fe\u7247\u8d44\u6e90",
-                        "data": [
-                                    62,
-                                    61,
-                                    61,
-                                    62,
-                                    62,
-                                    61,
-                                    60,
-                                    64,
-                                    63,
-                                    61
-                        ],
-                        "backgroundColor": "#FF9FF3"
-            },
-            {
-                        "label": "\u8d44\u6e90\u5305",
-                        "data": [
-                                    18,
-                                    18,
-                                    18,
-                                    18,
-                                    18,
-                                    18,
-                                    18,
-                                    19,
-                                    19,
-                                    18
-                        ],
-                        "backgroundColor": "#54A0FF"
-            },
-            {
-                        "label": "\u97f3\u9891\u8d44\u6e90",
-                        "data": [
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39,
-                                    39
-                        ],
-                        "backgroundColor": "#5F27CD"
-            }
-]
+        // 总请求数变化趋势图
+        const requestCountData = {
+            labels: ['111104'],
+            datasets: [{
+                label: '总请求数',
+                data: [354],
+                borderColor: '#FF6B6B',
+                backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#FF6B6B',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }]
         };
 
-        // 创建资源数量堆叠图
-        const resourceStackedCtx = document.getElementById('resourceStackedChart').getContext('2d');
-        const totalCounts = [383, 382, 382, 383, 383, 382, 381, 386, 385, 382];
-        new Chart(resourceStackedCtx, {
-            type: 'bar',
-            data: resourceStackedData,
+        const requestCountCtx = document.getElementById('requestCountChart').getContext('2d');
+        new Chart(requestCountCtx, {
+            type: 'line',
+            data: requestCountData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
-                        text: '每次测试各类型资源数量分布',
+                        text: '总请求数变化趋势',
                         font: { size: 16, weight: 'bold' }
                     },
                     legend: {
-                        position: 'right'
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '请求数量'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 游戏加载时间曲线图
+        const gameLoadTimeData = {
+            labels: ['111104'],
+            datasets: [{
+                label: '游戏加载时间(秒)',
+                data: [3.8682999999523164],
+                borderColor: '#9C27B0',
+                backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#9C27B0',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                spanGaps: true  // 连接空值点
+            }]
+        };
+
+        const gameLoadTimeCtx = document.getElementById('gameLoadTimeChart').getContext('2d');
+        new Chart(gameLoadTimeCtx, {
+            type: 'line',
+            data: gameLoadTimeData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Game Total Load Time',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    legend: {
+                        display: false
                     },
                     tooltip: {
                         callbacks: {
-                            afterTitle: function(context) {
-                                const testIndex = context[0].dataIndex;
-                                return `总数量: ${totalCounts[testIndex]} 个`;
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                if (value === null) {
+                                    return '游戏加载时间: 未记录';
+                                }
+                                return `游戏加载时间: ${value.toFixed(3)}秒`;
                             }
                         }
                     }
                 },
                 scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '加载时间(秒)'
+                        }
+                    },
                     x: {
-                        stacked: true,
                         title: {
                             display: true,
                             text: '测试次数'
                         }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 8
+                    }
+                }
+            }
+        });
+        
+        // HAR文件加载差值图表
+        const timeDifferenceData = {
+            labels: ['111104'],
+            datasets: [{
+                label: '时间差值(秒)',
+                data: [2.269],
+                borderColor: '#FF5722',
+                backgroundColor: 'rgba(255, 87, 34, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#FF5722',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                spanGaps: true
+            }]
+        };
+        const timeDifferenceCtx = document.getElementById('timeDifferenceChart').getContext('2d');
+        new Chart(timeDifferenceCtx, {
+            type: 'line',
+            data: timeDifferenceData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'HAR文件加载差值趋势',
+                        font: { size: 16, weight: 'bold' }
                     },
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                if (value === null) { return '时间差值: 未记录'; }
+                                return `时间差值: ${value.toFixed(3)}秒`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '差值(秒)' } },
+                    x: { title: { display: true, text: '测试次数' } }
+                },
+                elements: { point: { hoverRadius: 8 } }
+            }
+        });
+        
+        // HTTP状态码分布图
+        const statusCodeData = {
+            labels: ['111104'],
+            datasets: [{
+                label: '成功率 (%)',
+                data: [99.71751412429379],
+                borderColor: '#4ECDC4',
+                backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#4ECDC4',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }]
+        };
+
+        const statusCodeCtx = document.getElementById('statusCodeChart').getContext('2d');
+        new Chart(statusCodeCtx, {
+            type: 'line',
+            data: statusCodeData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '请求成功率趋势',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
                     y: {
-                        stacked: true,
+                        beginAtZero: true,
+                        max: 100,
                         title: {
                             display: true,
-                            text: '资源数量'
+                            text: '成功率 (%)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 缓存命中率趋势图
+        const cacheHitRateData = {
+            labels: ['111104'],
+            datasets: [{
+                label: '缓存命中率 (%)',
+                data: [0.0],
+                borderColor: '#45B7D1',
+                backgroundColor: 'rgba(69, 183, 209, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#45B7D1',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }]
+        };
+
+        const cacheHitRateCtx = document.getElementById('cacheHitRateChart').getContext('2d');
+        new Chart(cacheHitRateCtx, {
+            type: 'line',
+            data: cacheHitRateData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '缓存命中率变化趋势',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '命中率 (%)'
                         }
                     }
                 }
@@ -408,133 +528,61 @@
         
         // 资源体积堆叠图数据
         const volumeStackedData = {
-            labels: ['测试1', '测试2', '测试3', '测试4', '测试5', '测试6', '测试7', '测试8', '测试9', '测试10'],
+            labels: ['111104'],
             datasets: [
             {
                         "label": "HTML\u8d44\u6e90",
                         "data": [
-                                    0.01,
-                                    0.01,
-                                    0.01,
-                                    0.01,
-                                    0.01,
-                                    0.01,
-                                    0.01,
-                                    0.01,
-                                    0.01,
-                                    0.01
+                                    0.0
                         ],
                         "backgroundColor": "#FF6B6B"
             },
             {
                         "label": "JSON\u8d44\u6e90",
                         "data": [
-                                    1.63,
-                                    1.63,
-                                    1.63,
-                                    1.63,
-                                    1.63,
-                                    1.63,
-                                    1.63,
-                                    1.63,
-                                    1.63,
-                                    1.63
+                                    0.0
                         ],
                         "backgroundColor": "#4ECDC4"
             },
             {
                         "label": "JavaScript\u8d44\u6e90",
                         "data": [
-                                    2.61,
-                                    2.61,
-                                    2.61,
-                                    2.61,
-                                    2.61,
-                                    2.61,
-                                    2.61,
-                                    2.61,
-                                    2.61,
-                                    2.61
+                                    0.0
                         ],
                         "backgroundColor": "#45B7D1"
             },
             {
                         "label": "WebAssembly\u8d44\u6e90",
                         "data": [
-                                    0.19,
-                                    0.19,
-                                    0.19,
-                                    0.19,
-                                    0.19,
-                                    0.19,
-                                    0.19,
-                                    0.19,
-                                    0.19,
-                                    0.19
+                                    0.0
                         ],
                         "backgroundColor": "#96CEB4"
             },
             {
-                        "label": "XML\u8d44\u6e90",
+                        "label": "\u56fe\u7247\u8d44\u6e90",
                         "data": [
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
                                     0.0
                         ],
                         "backgroundColor": "#FECA57"
             },
             {
-                        "label": "\u56fe\u7247\u8d44\u6e90",
+                        "label": "\u7edf\u8ba1\u5206\u6790",
                         "data": [
-                                    4.88,
-                                    4.88,
-                                    4.88,
-                                    4.88,
-                                    4.88,
-                                    4.88,
-                                    4.86,
-                                    5.64,
-                                    5.1,
-                                    4.88
+                                    0.0
                         ],
                         "backgroundColor": "#FF9FF3"
             },
             {
                         "label": "\u8d44\u6e90\u5305",
                         "data": [
-                                    2.29,
-                                    2.29,
-                                    2.29,
-                                    2.29,
-                                    2.29,
-                                    2.29,
-                                    2.29,
-                                    2.3,
-                                    2.3,
-                                    2.29
+                                    0.0
                         ],
                         "backgroundColor": "#54A0FF"
             },
             {
                         "label": "\u97f3\u9891\u8d44\u6e90",
                         "data": [
-                                    1.85,
-                                    1.85,
-                                    1.85,
-                                    1.85,
-                                    1.85,
-                                    1.85,
-                                    1.85,
-                                    1.85,
-                                    1.85,
-                                    1.85
+                                    0.0
                         ],
                         "backgroundColor": "#5F27CD"
             }
@@ -543,7 +591,7 @@
 
         // 创建资源体积堆叠图
         const volumeStackedCtx = document.getElementById('volumeStackedChart').getContext('2d');
-        const totalVolumes = [13.46, 13.46, 13.46, 13.46, 13.46, 13.46, 13.440000000000001, 14.23, 13.689999999999998, 13.46];
+        const totalVolumes = [0.0];
         new Chart(volumeStackedCtx, {
             type: 'bar',
             data: volumeStackedData,
@@ -589,21 +637,12 @@
         
         // 资源占比线图数据
         const percentageLineData = {
-            labels: ['测试1', '测试2', '测试3', '测试4', '测试5', '测试6', '测试7', '测试8', '测试9', '测试10'],
+            labels: ['111104'],
             datasets: [
             {
                         "label": "HTML\u8d44\u6e90",
                         "data": [
-                                    0.07,
-                                    0.07,
-                                    0.07,
-                                    0.07,
-                                    0.07,
-                                    0.07,
-                                    0.07,
-                                    0.07,
-                                    0.07,
-                                    0.07
+                                    14.07
                         ],
                         "borderColor": "#FF6B6B",
                         "backgroundColor": "#FF6B6B20",
@@ -613,16 +652,7 @@
             {
                         "label": "JSON\u8d44\u6e90",
                         "data": [
-                                    12.14,
-                                    12.14,
-                                    12.14,
-                                    12.14,
-                                    12.14,
-                                    12.14,
-                                    12.15,
-                                    11.49,
-                                    11.94,
-                                    12.14
+                                    85.93
                         ],
                         "borderColor": "#4ECDC4",
                         "backgroundColor": "#4ECDC420",
@@ -632,16 +662,7 @@
             {
                         "label": "JavaScript\u8d44\u6e90",
                         "data": [
-                                    19.41,
-                                    19.41,
-                                    19.41,
-                                    19.41,
-                                    19.41,
-                                    19.41,
-                                    19.43,
-                                    18.37,
-                                    19.09,
-                                    19.41
+                                    0.0
                         ],
                         "borderColor": "#45B7D1",
                         "backgroundColor": "#45B7D120",
@@ -651,16 +672,7 @@
             {
                         "label": "WebAssembly\u8d44\u6e90",
                         "data": [
-                                    1.41,
-                                    1.41,
-                                    1.41,
-                                    1.41,
-                                    1.41,
-                                    1.41,
-                                    1.41,
-                                    1.33,
-                                    1.39,
-                                    1.41
+                                    0.0
                         ],
                         "borderColor": "#96CEB4",
                         "backgroundColor": "#96CEB420",
@@ -668,17 +680,8 @@
                         "tension": 0.3
             },
             {
-                        "label": "XML\u8d44\u6e90",
+                        "label": "\u56fe\u7247\u8d44\u6e90",
                         "data": [
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
-                                    0.0,
                                     0.0
                         ],
                         "borderColor": "#FECA57",
@@ -687,18 +690,9 @@
                         "tension": 0.3
             },
             {
-                        "label": "\u56fe\u7247\u8d44\u6e90",
+                        "label": "\u7edf\u8ba1\u5206\u6790",
                         "data": [
-                                    36.2,
-                                    36.2,
-                                    36.2,
-                                    36.2,
-                                    36.2,
-                                    36.2,
-                                    36.14,
-                                    39.59,
-                                    37.21,
-                                    36.2
+                                    0.0
                         ],
                         "borderColor": "#FF9FF3",
                         "backgroundColor": "#FF9FF320",
@@ -708,16 +702,7 @@
             {
                         "label": "\u8d44\u6e90\u5305",
                         "data": [
-                                    17.02,
-                                    17.02,
-                                    17.02,
-                                    17.02,
-                                    17.02,
-                                    17.02,
-                                    17.04,
-                                    16.15,
-                                    16.78,
-                                    17.02
+                                    0.0
                         ],
                         "borderColor": "#54A0FF",
                         "backgroundColor": "#54A0FF20",
@@ -727,16 +712,7 @@
             {
                         "label": "\u97f3\u9891\u8d44\u6e90",
                         "data": [
-                                    13.75,
-                                    13.75,
-                                    13.75,
-                                    13.75,
-                                    13.75,
-                                    13.75,
-                                    13.76,
-                                    13.01,
-                                    13.52,
-                                    13.75
+                                    0.0
                         ],
                         "borderColor": "#5F27CD",
                         "backgroundColor": "#5F27CD20",
